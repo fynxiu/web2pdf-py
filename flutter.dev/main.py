@@ -1,6 +1,8 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import json
+from pathlib import Path
+import argparse
 
 # useful links
 # https://chromedriver.chromium.org/capabilities
@@ -12,6 +14,11 @@ import json
 
 # Preference is the user preferences of chrome, path: $HOME/.config/google-chrome/Default/Preferences (ubuntu)
 # pdf would not be generated in headless mode
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--out', help='the output directory', default='')
+args = parser.parse_args()
+outputDir = Path(args.out).absolute() if args.out else Path.home().joinpath('Downloads').absolute()
 
 printingAppState = {
     "version": 2,
@@ -100,7 +107,7 @@ printingAppState = {
                 },
                 "version": "1.0",
             },
-            "displayName": "另存为 PDF",
+            "displayName": "Save as PDF",
             "extensionId": "",
             "extensionName": "",
             "icon": "cr:insert-drive-file",
@@ -121,7 +128,7 @@ printingAppState = {
 # chrome preferences
 prefs = {
     "printing.print_preview_sticky_settings.appState": json.dumps(printingAppState),
-    "savefile": {"default_directory": "/home/fyn/Documents/inbox"},
+    "savefile": {"default_directory": outputDir},
 }
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_experimental_option("prefs", prefs)
